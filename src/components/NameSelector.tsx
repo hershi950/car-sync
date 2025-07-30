@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ChevronDown } from "lucide-react";
 import { teamMemberService } from "@/services/teamMemberService";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,9 +18,10 @@ interface NameSelectorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  onValidationChange?: (isValid: boolean) => void;
 }
 
-export function NameSelector({ value, onChange, placeholder = "Select or type a name" }: NameSelectorProps) {
+export function NameSelector({ value, onChange, placeholder = "Select or type a name", onValidationChange }: NameSelectorProps) {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [suggestions, setSuggestions] = useState<TeamMember[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -40,14 +41,23 @@ export function NameSelector({ value, onChange, placeholder = "Select or type a 
 
   useEffect(() => {
     if (value) {
+      // Exact sequence filtering - name must start with the typed value
       const filtered = teamMembers.filter(member =>
-        member.name.toLowerCase().includes(value.toLowerCase())
+        member.name.toLowerCase().startsWith(value.toLowerCase())
       );
       setSuggestions(filtered);
     } else {
-      setSuggestions([]);
+      setSuggestions(teamMembers); // Show all when empty
     }
   }, [value, teamMembers]);
+
+  // Validation effect
+  useEffect(() => {
+    const isValid = value === "" || teamMembers.some(member => 
+      member.name.toLowerCase() === value.toLowerCase()
+    );
+    onValidationChange?.(isValid);
+  }, [value, teamMembers, onValidationChange]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -156,14 +166,23 @@ export function NameSelector({ value, onChange, placeholder = "Select or type a 
   return (
     <div className="relative">
       <div className="flex gap-2">
-        <Input
-          ref={inputRef}
-          value={value}
-          onChange={handleInputChange}
-          onFocus={() => setShowSuggestions(true)}
-          placeholder={placeholder}
-          className="flex-1"
-        />
+        <div className="relative flex-1">
+          <Input
+            ref={inputRef}
+            value={value}
+            onChange={handleInputChange}
+            onFocus={() => setShowSuggestions(true)}
+            placeholder={placeholder}
+            className="pr-8"
+          />
+          <button
+            type="button"
+            onClick={() => setShowSuggestions(!showSuggestions)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </button>
+        </div>
         <Button
           type="button"
           variant="outline"

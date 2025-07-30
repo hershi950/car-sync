@@ -32,6 +32,7 @@ export function BookingDialog({ open, onClose, onSubmit, selectedDate, loading =
     notes: "",
   });
   const [errors, setErrors] = useState<Partial<BookingData>>({});
+  const [isNameValid, setIsNameValid] = useState(false);
 
   React.useEffect(() => {
     if (open && selectedDate) {
@@ -52,6 +53,8 @@ export function BookingDialog({ open, onClose, onSubmit, selectedDate, loading =
 
     if (!formData.user_name.trim()) {
       newErrors.user_name = "Name is required";
+    } else if (!isNameValid) {
+      newErrors.user_name = "Please select a name from the list";
     }
     if (!formData.start_time) {
       newErrors.start_time = "Start time is required";
@@ -128,6 +131,7 @@ export function BookingDialog({ open, onClose, onSubmit, selectedDate, loading =
             <NameSelector
               value={formData.user_name}
               onChange={(value) => handleFieldChange("user_name", value)}
+              onValidationChange={setIsNameValid}
               placeholder="Select or type your name"
             />
             {errors.user_name && (
