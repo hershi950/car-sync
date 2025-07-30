@@ -41,9 +41,9 @@ export function NameSelector({ value, onChange, placeholder = "Select or type a 
 
   useEffect(() => {
     if (value) {
-      // Exact sequence filtering - name must start with the typed value
+      // Case-insensitive substring filtering - name can contain the typed sequence anywhere
       const filtered = teamMembers.filter(member =>
-        member.name.toLowerCase().startsWith(value.toLowerCase())
+        member.name.toLowerCase().includes(value.toLowerCase())
       );
       setSuggestions(filtered);
     } else {
