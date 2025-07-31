@@ -21,7 +21,7 @@ interface NameSelectorProps {
   onValidationChange?: (isValid: boolean) => void;
 }
 
-export function NameSelector({ value, onChange, placeholder = "Select or type a name", onValidationChange }: NameSelectorProps) {
+export function NameSelector({ value, onChange, placeholder = "Select your name", onValidationChange }: NameSelectorProps) {
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [suggestions, setSuggestions] = useState<TeamMember[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -173,7 +173,7 @@ export function NameSelector({ value, onChange, placeholder = "Select or type a 
             onChange={handleInputChange}
             onFocus={() => setShowSuggestions(true)}
             placeholder={placeholder}
-            className="pr-8"
+            className="pr-8 bg-background"
           />
           <button
             type="button"
@@ -206,12 +206,12 @@ export function NameSelector({ value, onChange, placeholder = "Select or type a 
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-48 overflow-y-auto"
+          className="absolute z-50 w-full mt-1 bg-card border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto"
         >
           {suggestions.map((member) => (
             <div
               key={member.id}
-              className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
+              className="px-3 py-3 hover:bg-accent cursor-pointer text-sm transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg"
               onClick={() => handleSuggestionClick(member.name)}
             >
               {member.name}
