@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { format, isSameDay, parseISO } from "date-fns";
-import { CalendarIcon, Download, Trash2, Car } from "lucide-react";
+import { CalendarIcon, Download, Trash2, Car, LogOut } from "lucide-react";
 import { carScheduleService } from "@/services/carScheduleService";
 import { appSettingsService } from "@/services/appSettingsService";
 import { BookingDialog } from "@/components/BookingDialog";
 import { BookingConfirmationDialog } from "@/components/BookingConfirmationDialog";
 import { KeyLocationManager } from "@/components/KeyLocationManager";
+import { AdminSettings } from "@/components/AdminSettings";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,12 @@ interface CarSchedule {
   updated_at: string;
 }
 
-const Index = () => {
+interface IndexProps {
+  accessLevel: 'team' | 'admin';
+  onLogout: () => void;
+}
+
+const Index: React.FC<IndexProps> = ({ accessLevel, onLogout }) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [schedules, setSchedules] = useState<CarSchedule[]>([]);
   const [keyLocation, setKeyLocation] = useState<string>("");
@@ -189,18 +195,28 @@ const Index = () => {
                     Car Scheduling System
                   </CardTitle>
                   <div className="flex gap-2">
+                    {accessLevel === 'admin' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={exportToCSV}
+                        disabled={schedules.length === 0}
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Export CSV
+                      </Button>
+                    )}
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={exportToCSV}
-                      disabled={schedules.length === 0}
+                      onClick={onLogout}
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      Export CSV
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
                     </Button>
                   </div>
                 </div>
-                <KeyLocationManager onLocationUpdate={setKeyLocation} />
+                {accessLevel === 'admin' && <KeyLocationManager onLocationUpdate={setKeyLocation} />}
               </CardHeader>
               <CardContent>
                 {error && (
@@ -269,14 +285,16 @@ const Index = () => {
                                 </p>
                               )}
                             </div>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setDeleteConfirmDialog({ open: true, scheduleId: schedule.id })}
-                              className="text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            {accessLevel === 'admin' && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDeleteConfirmDialog({ open: true, scheduleId: schedule.id })}
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         </CardContent>
                       </Card>
@@ -287,6 +305,13 @@ const Index = () => {
             </Card>
           </div>
         </div>
+
+        {/* Admin Settings Section */}
+        {accessLevel === 'admin' && (
+          <div className="mt-6">
+            <AdminSettings />
+          </div>
+        )}
 
         {/* Booking Dialog */}
         <BookingDialog
