@@ -43,7 +43,7 @@ export function Navigation({ activeTab, onTabChange, accessLevel, onLogout }: Na
             className="flex items-center gap-2"
           >
             <LogOut className="h-4 w-4" />
-            התנתק
+            Log out
           </Button>
         </div>
         

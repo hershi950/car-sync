@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { appSettingsService } from '@/services/appSettingsService';
 
@@ -14,6 +15,7 @@ const ADMIN_PASSCODE = 'RAFAELADMIN2025';
 export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted }) => {
   const [passcode, setPasscode] = useState('');
   const [teamPasscode, setTeamPasscode] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -61,7 +63,9 @@ export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted 
     try {
       if (passcode === ADMIN_PASSCODE) {
         localStorage.setItem('access_level', 'admin');
-        localStorage.setItem('stored_passcode', passcode);
+        if (rememberMe) {
+          localStorage.setItem('stored_passcode', passcode);
+        }
         onAccessGranted('admin');
         toast({
           title: "Admin access granted",
@@ -69,7 +73,9 @@ export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted 
         });
       } else if (passcode === teamPasscode) {
         localStorage.setItem('access_level', 'team');
-        localStorage.setItem('stored_passcode', passcode);
+        if (rememberMe) {
+          localStorage.setItem('stored_passcode', passcode);
+        }
         onAccessGranted('team');
         toast({
           title: "Team access granted",
@@ -111,6 +117,19 @@ export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted 
                 className="text-center text-lg tracking-wider"
                 autoFocus
               />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="remember-me" 
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              />
+              <label 
+                htmlFor="remember-me" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Remember me on this device
+              </label>
             </div>
             <Button 
               type="submit" 
