@@ -27,6 +27,7 @@ const App = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('access_level');
+    localStorage.removeItem('stored_passcode');
     setAccessLevel(null);
   };
 

@@ -19,6 +19,7 @@ export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted 
 
   useEffect(() => {
     loadTeamPasscode();
+    checkStoredPasscode();
   }, []);
 
   const loadTeamPasscode = async () => {
@@ -31,6 +32,26 @@ export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted 
     }
   };
 
+  const checkStoredPasscode = async () => {
+    const storedPasscode = localStorage.getItem('stored_passcode');
+    if (storedPasscode) {
+      // Load team passcode to verify
+      const teamCode = await appSettingsService.get('team_passcode').catch(() => 'RAFAEL2025');
+      
+      if (storedPasscode === ADMIN_PASSCODE) {
+        localStorage.setItem('access_level', 'admin');
+        onAccessGranted('admin');
+      } else if (storedPasscode === teamCode) {
+        localStorage.setItem('access_level', 'team');
+        onAccessGranted('team');
+      } else {
+        // Invalid stored passcode, clear it
+        localStorage.removeItem('stored_passcode');
+        localStorage.removeItem('access_level');
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passcode.trim()) return;
@@ -40,6 +61,7 @@ export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted 
     try {
       if (passcode === ADMIN_PASSCODE) {
         localStorage.setItem('access_level', 'admin');
+        localStorage.setItem('stored_passcode', passcode);
         onAccessGranted('admin');
         toast({
           title: "Admin access granted",
@@ -47,6 +69,7 @@ export const PasscodeScreen: React.FC<PasscodeScreenProps> = ({ onAccessGranted 
         });
       } else if (passcode === teamPasscode) {
         localStorage.setItem('access_level', 'team');
+        localStorage.setItem('stored_passcode', passcode);
         onAccessGranted('team');
         toast({
           title: "Team access granted",

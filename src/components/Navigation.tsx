@@ -14,7 +14,7 @@ export function Navigation({ activeTab, onTabChange, accessLevel, onLogout }: Na
   const navItems = [
     { id: 'booking', label: 'Book Car', icon: Calendar, description: 'Schedule car usage' },
     { id: 'key-location', label: 'Key Location', icon: MapPin, description: 'Find car keys', adminOnly: false },
-    { id: 'car-details', label: 'Car Details', icon: Car, description: 'Vehicle information', adminOnly: true },
+    { id: 'car-details', label: 'Car Details', icon: Car, description: 'Vehicle information', adminOnly: false },
     { id: 'usage-stats', label: 'Usage Stats', icon: BarChart3, description: 'Usage analytics', adminOnly: false },
   ];
 
@@ -29,7 +29,7 @@ export function Navigation({ activeTab, onTabChange, accessLevel, onLogout }: Na
               <Car className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Rafael Car Scheduler</h1>
+              <h1 className="text-xl font-semibold text-foreground">Car Scheduler</h1>
               <p className="text-sm text-muted-foreground">
                 {accessLevel === 'admin' ? 'Admin Access' : 'Team Access'}
               </p>
@@ -43,7 +43,7 @@ export function Navigation({ activeTab, onTabChange, accessLevel, onLogout }: Na
             className="flex items-center gap-2"
           >
             <LogOut className="h-4 w-4" />
-            Switch User
+            התנתק
           </Button>
         </div>
         
