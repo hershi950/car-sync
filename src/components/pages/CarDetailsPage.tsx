@@ -110,21 +110,6 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
     setEditValues(prev => ({ ...prev, [field]: value }));
   };
 
-  if (accessLevel !== 'admin') {
-    return (
-      <div className="max-w-2xl mx-auto space-y-6 fade-in">
-        <Card className="card-hover">
-          <CardContent className="text-center py-12">
-            <Car className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-semibold mb-2">Admin Access Required</h3>
-            <p className="text-muted-foreground">
-              Only administrators can view and edit car details.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6 fade-in">
@@ -135,7 +120,7 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
               <Car className="h-5 w-5 text-primary" />
               Car Details
             </CardTitle>
-            {!isEditing && (
+            {!isEditing && accessLevel === 'admin' && (
               <Button onClick={handleEdit} variant="outline" size="sm">
                 <Edit3 className="h-4 w-4 mr-1" />
                 Edit Details
