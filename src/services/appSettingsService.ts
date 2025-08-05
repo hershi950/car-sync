@@ -19,7 +19,7 @@ export const appSettingsService = {
   async set(key: string, value: string): Promise<AppSetting> {
     const { data, error } = await supabase
       .from("app_settings")
-      .upsert({ key, value })
+      .upsert({ key, value }, { onConflict: 'key' })
       .select()
       .single();
     
