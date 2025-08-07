@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Car, BarChart3, LogOut } from "lucide-react";
+import { Calendar, MapPin, Car, BarChart3, LogOut, Navigation as NavigationIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavigationProps {
@@ -13,6 +13,7 @@ interface NavigationProps {
 export function Navigation({ activeTab, onTabChange, accessLevel, onLogout }: NavigationProps) {
   const navItems = [
     { id: 'booking', label: 'Book Car', icon: Calendar, description: 'Schedule car usage' },
+    { id: 'car-location', label: 'Car Location', icon: NavigationIcon, description: 'Save & find car location', adminOnly: false },
     { id: 'key-location', label: 'Key Location', icon: MapPin, description: 'Find car keys', adminOnly: false },
     { id: 'car-details', label: 'Car Details', icon: Car, description: 'Vehicle information', adminOnly: false },
     { id: 'usage-stats', label: 'Usage Stats', icon: BarChart3, description: 'Usage analytics', adminOnly: false },

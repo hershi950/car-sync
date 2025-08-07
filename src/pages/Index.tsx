@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { BookingPage } from "@/components/pages/BookingPage";
+import { CarLocationPage } from "@/components/pages/CarLocationPage";
 import { KeyLocationPage } from "@/components/pages/KeyLocationPage";
 import { CarDetailsPage } from "@/components/pages/CarDetailsPage";
 import { UsageStatsPage } from "@/components/pages/UsageStatsPage";
@@ -10,9 +11,10 @@ import { appSettingsService } from "@/services/appSettingsService";
 interface IndexProps {
   accessLevel: 'team' | 'admin';
   onLogout: () => void;
+  userName: string;
 }
 
-const Index: React.FC<IndexProps> = ({ accessLevel, onLogout }) => {
+const Index: React.FC<IndexProps> = ({ accessLevel, onLogout, userName }) => {
   const [activeTab, setActiveTab] = useState('booking');
   const [keyLocation, setKeyLocation] = useState<string>("");
 
@@ -37,6 +39,8 @@ const Index: React.FC<IndexProps> = ({ accessLevel, onLogout }) => {
     switch (activeTab) {
       case 'booking':
         return <BookingPage accessLevel={accessLevel} keyLocation={keyLocation} />;
+      case 'car-location':
+        return <CarLocationPage userName={userName} />;
       case 'key-location':
         return <KeyLocationPage accessLevel={accessLevel} onLocationUpdate={handleLocationUpdate} />;
       case 'car-details':
