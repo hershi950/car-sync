@@ -11,10 +11,9 @@ import { appSettingsService } from "@/services/appSettingsService";
 interface IndexProps {
   accessLevel: 'team' | 'admin';
   onLogout: () => void;
-  userName: string;
 }
 
-const Index: React.FC<IndexProps> = ({ accessLevel, onLogout, userName }) => {
+const Index: React.FC<IndexProps> = ({ accessLevel, onLogout }) => {
   const [activeTab, setActiveTab] = useState('booking');
   const [keyLocation, setKeyLocation] = useState<string>("");
 
@@ -40,7 +39,7 @@ const Index: React.FC<IndexProps> = ({ accessLevel, onLogout, userName }) => {
       case 'booking':
         return <BookingPage accessLevel={accessLevel} keyLocation={keyLocation} />;
       case 'car-location':
-        return <CarLocationPage userName={userName} />;
+        return <CarLocationPage />;
       case 'key-location':
         return <KeyLocationPage accessLevel={accessLevel} onLocationUpdate={handleLocationUpdate} />;
       case 'car-details':

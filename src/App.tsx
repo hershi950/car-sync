@@ -12,29 +12,23 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [accessLevel, setAccessLevel] = useState<'team' | 'admin' | null>(null);
-  const [userName, setUserName] = useState<string>('');
 
   useEffect(() => {
     // Check if user already has access
     const storedAccess = localStorage.getItem('access_level');
-    const storedUserName = localStorage.getItem('user_name');
-    if ((storedAccess === 'team' || storedAccess === 'admin') && storedUserName) {
+    if (storedAccess === 'team' || storedAccess === 'admin') {
       setAccessLevel(storedAccess);
-      setUserName(storedUserName);
     }
   }, []);
 
-  const handleAccessGranted = (level: 'team' | 'admin', name: string) => {
+  const handleAccessGranted = (level: 'team' | 'admin') => {
     setAccessLevel(level);
-    setUserName(name);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('access_level');
     localStorage.removeItem('stored_passcode');
-    localStorage.removeItem('user_name');
     setAccessLevel(null);
-    setUserName('');
   };
 
   if (!accessLevel) {
@@ -56,7 +50,7 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index accessLevel={accessLevel} onLogout={handleLogout} userName={userName} />} />
+            <Route path="/" element={<Index accessLevel={accessLevel} onLogout={handleLogout} />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

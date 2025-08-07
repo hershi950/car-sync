@@ -16,11 +16,7 @@ interface CarLocation {
   created_at: string;
 }
 
-interface CarLocationPageProps {
-  userName: string;
-}
-
-export function CarLocationPage({ userName }: CarLocationPageProps) {
+export function CarLocationPage() {
   const [lastLocation, setLastLocation] = useState<CarLocation | null>(null);
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +81,7 @@ export function CarLocationPage({ userName }: CarLocationPageProps) {
           latitude: latitude,
           longitude: longitude,
           description: description.trim() || null,
-          saved_by: userName
+          saved_by: 'User'
         })
         .select()
         .single();
@@ -213,10 +209,6 @@ export function CarLocationPage({ userName }: CarLocationPageProps) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     {format(new Date(lastLocation.created_at), "MMM d, yyyy 'at' h:mm a")}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <User className="h-4 w-4" />
-                    Saved by {lastLocation.saved_by}
                   </div>
                 </div>
 
