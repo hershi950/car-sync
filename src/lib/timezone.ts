@@ -1,14 +1,11 @@
 import { format as formatDate, parseISO } from "date-fns";
-import { toZonedTime, fromZonedTime, formatInTimeZone } from "date-fns-tz";
-
-const TIMEZONE = "Asia/Jerusalem";
 
 export const timezone = {
   /**
-   * Format a date string from database for display (no conversion)
+   * Format a date string from database for display (raw value, no conversion)
    */
   formatToLocal: (dateString: string, formatString: string = "HH:mm"): string => {
-    // Parse and format directly - no timezone conversion
+    // Parse and format the raw datetime string exactly as stored
     const date = parseISO(dateString);
     return formatDate(date, formatString);
   },
