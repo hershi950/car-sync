@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { format, isSameDay, parseISO } from "date-fns";
+import { timezone } from "@/lib/timezone";
 import { CalendarIcon, Trash2, Car, Clock } from "lucide-react";
 import { carScheduleService } from "@/services/carScheduleService";
 import { BookingDialog } from "@/components/BookingDialog";
@@ -57,7 +58,7 @@ export function BookingPage({ accessLevel, keyLocation }: BookingPageProps) {
 
   const isDayBooked = (date: Date): boolean => {
     return schedules.some(schedule => {
-      const scheduleDate = parseISO(schedule.start_time);
+      const scheduleDate = timezone.parseToLocal(schedule.start_time);
       return isSameDay(date, scheduleDate);
     });
   };
@@ -65,7 +66,7 @@ export function BookingPage({ accessLevel, keyLocation }: BookingPageProps) {
   const getSchedulesForDate = (date: Date | undefined): CarSchedule[] => {
     if (!date) return [];
     return schedules.filter(schedule => {
-      const scheduleDate = parseISO(schedule.start_time);
+      const scheduleDate = timezone.parseToLocal(schedule.start_time);
       return isSameDay(date, scheduleDate);
     });
   };
@@ -120,9 +121,7 @@ export function BookingPage({ accessLevel, keyLocation }: BookingPageProps) {
   };
 
   const formatTimeRange = (startTime: string, endTime: string): string => {
-    const start = parseISO(startTime);
-    const end = parseISO(endTime);
-    return `${format(start, "HH:mm")} - ${format(end, "HH:mm")}`;
+    return `${timezone.formatToLocal(startTime, "HH:mm")} - ${timezone.formatToLocal(endTime, "HH:mm")}`;
   };
 
   const todaysSchedules = getSchedulesForDate(selectedDate);
