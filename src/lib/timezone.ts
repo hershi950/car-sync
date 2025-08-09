@@ -5,60 +5,46 @@ const TIMEZONE = "Asia/Jerusalem";
 
 export const timezone = {
   /**
-   * Convert a Date object to Israel timezone for display
-   */
-  toLocalTime: (date: Date): Date => {
-    return toZonedTime(date, TIMEZONE);
-  },
-
-  /**
-   * Convert a local time (assumed to be in Israel timezone) to UTC for database storage
-   */
-  toUTC: (localDate: Date): Date => {
-    return fromZonedTime(localDate, TIMEZONE);
-  },
-
-  /**
-   * Format a date string from database (already in Asia/Jerusalem) for display
+   * Format a date string from database for display (no conversion)
    */
   formatToLocal: (dateString: string, formatString: string = "HH:mm"): string => {
-    // Parse the date and format it directly - it's already in the correct timezone
+    // Parse and format directly - no timezone conversion
     const date = parseISO(dateString);
     return formatDate(date, formatString);
   },
 
   /**
-   * Parse ISO string - treating it as already in Asia/Jerusalem timezone
+   * Parse ISO string directly (no timezone conversion)
    */
   parseToLocal: (dateString: string): Date => {
-    // Parse directly since the stored time is already in Asia/Jerusalem timezone
+    // Parse directly with no conversion
     return parseISO(dateString);
   },
 
   /**
-   * Create datetime-local input value from Date in local timezone
+   * Create datetime-local input value from Date (no conversion)
    */
   toDateTimeLocal: (date: Date): string => {
-    const localDate = toZonedTime(date, TIMEZONE);
-    return formatDate(localDate, "yyyy-MM-dd'T'HH:mm");
+    // Format directly without timezone conversion
+    return formatDate(date, "yyyy-MM-dd'T'HH:mm");
   },
 
   /**
-   * Parse datetime-local input value and keep in Asia/Jerusalem timezone for storage
+   * Parse datetime-local input value for storage (no conversion)
    */
   fromDateTimeLocal: (dateTimeLocal: string): string => {
-    // Create a Date object from the local datetime input
-    const localDate = new Date(dateTimeLocal);
-    // Convert it to Asia/Jerusalem timezone and return as ISO string
-    const zonedDate = toZonedTime(localDate, TIMEZONE);
-    // Format it to include the timezone offset for Asia/Jerusalem
-    return formatInTimeZone(localDate, TIMEZONE, "yyyy-MM-dd'T'HH:mm:ssXXX");
+    // Return the datetime string exactly as entered for storage
+    // Add seconds if not present to make it a valid ISO string
+    if (dateTimeLocal.length === 16) {
+      return dateTimeLocal + ":00";
+    }
+    return dateTimeLocal;
   },
 
   /**
-   * Get current date in local timezone for calendar/date selection
+   * Get current date (no timezone conversion)
    */
   getCurrentLocalDate: (): Date => {
-    return toZonedTime(new Date(), TIMEZONE);
+    return new Date();
   }
 };
