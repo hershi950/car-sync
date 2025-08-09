@@ -19,18 +19,20 @@ export const timezone = {
   },
 
   /**
-   * Format a date string from database to local time display
+   * Format a date string from database (already in Asia/Jerusalem) for display
    */
   formatToLocal: (dateString: string, formatString: string = "HH:mm"): string => {
-    return formatInTimeZone(dateString, TIMEZONE, formatString);
+    // Parse the date and format it directly - it's already in the correct timezone
+    const date = parseISO(dateString);
+    return formatDate(date, formatString);
   },
 
   /**
-   * Parse ISO string and convert to local timezone
+   * Parse ISO string - treating it as already in Asia/Jerusalem timezone
    */
   parseToLocal: (dateString: string): Date => {
-    const date = parseISO(dateString);
-    return toZonedTime(date, TIMEZONE);
+    // Parse directly since the stored time is already in Asia/Jerusalem timezone
+    return parseISO(dateString);
   },
 
   /**
@@ -42,13 +44,15 @@ export const timezone = {
   },
 
   /**
-   * Parse datetime-local input value and convert to UTC for storage
+   * Parse datetime-local input value and keep in Asia/Jerusalem timezone for storage
    */
   fromDateTimeLocal: (dateTimeLocal: string): string => {
-    // Create a date object assuming the input is in local timezone
+    // Create a Date object from the local datetime input
     const localDate = new Date(dateTimeLocal);
-    const utcDate = fromZonedTime(localDate, TIMEZONE);
-    return utcDate.toISOString();
+    // Convert it to Asia/Jerusalem timezone and return as ISO string
+    const zonedDate = toZonedTime(localDate, TIMEZONE);
+    // Format it to include the timezone offset for Asia/Jerusalem
+    return formatInTimeZone(localDate, TIMEZONE, "yyyy-MM-dd'T'HH:mm:ssXXX");
   },
 
   /**
