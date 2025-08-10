@@ -6,6 +6,7 @@ import { MapPin, Navigation, Clock, User, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { MapComponent } from "@/components/MapComponent";
 
 interface CarLocation {
   id: string;
@@ -136,13 +137,13 @@ export function CarLocationPage() {
   };
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-4xl">
+    <div className="container mx-auto px-6 py-8 max-w-7xl">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-foreground mb-2">Car Location</h1>
         <p className="text-muted-foreground">Save and find the car's parking location</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3 md:grid-cols-2">
         {/* Save New Location */}
         <Card>
           <CardHeader>
@@ -188,6 +189,24 @@ export function CarLocationPage() {
                 </>
               )}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Interactive Map */}
+        <Card className="lg:row-span-1">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-primary" />
+              Interactive Map
+            </CardTitle>
+            <CardDescription>
+              View car location on map
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="h-[400px] lg:h-[500px]">
+              <MapComponent location={lastLocation} />
+            </div>
           </CardContent>
         </Card>
 
