@@ -57,7 +57,9 @@ export function BookingPage({ accessLevel, keyLocation }: BookingPageProps) {
 
   const isDayBooked = (date: Date): boolean => {
     return schedules.some(schedule => {
-      const scheduleDate = parseISO(schedule.start_time);
+      // Extract just the date part without timezone conversion
+      const dateOnly = schedule.start_time.split('T')[0];
+      const scheduleDate = new Date(dateOnly + 'T00:00:00');
       return isSameDay(date, scheduleDate);
     });
   };
@@ -65,7 +67,9 @@ export function BookingPage({ accessLevel, keyLocation }: BookingPageProps) {
   const getSchedulesForDate = (date: Date | undefined): CarSchedule[] => {
     if (!date) return [];
     return schedules.filter(schedule => {
-      const scheduleDate = parseISO(schedule.start_time);
+      // Extract just the date part without timezone conversion
+      const dateOnly = schedule.start_time.split('T')[0];
+      const scheduleDate = new Date(dateOnly + 'T00:00:00');
       return isSameDay(date, scheduleDate);
     });
   };
@@ -120,9 +124,17 @@ export function BookingPage({ accessLevel, keyLocation }: BookingPageProps) {
   };
 
   const formatTimeRange = (startTime: string, endTime: string): string => {
-    const startDate = parseISO(startTime);
-    const endDate = parseISO(endTime);
-    return `${format(startDate, "HH:mm")} - ${format(endDate, "HH:mm")}`;
+    // Extract time portion without timezone conversion
+    const extractTime = (timestamp: string) => {
+      const timePart = timestamp.split('T')[1];
+      if (timePart) {
+        const timeOnly = timePart.split('+')[0].split('Z')[0];
+        return timeOnly.substring(0, 5); // HH:mm format
+      }
+      return timestamp;
+    };
+    
+    return `${extractTime(startTime)} - ${extractTime(endTime)}`;
   };
 
   const todaysSchedules = getSchedulesForDate(selectedDate);
