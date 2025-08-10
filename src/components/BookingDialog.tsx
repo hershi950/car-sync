@@ -6,7 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { NameSelector } from "./NameSelector";
 import { format } from "date-fns";
-import { timezone } from "@/lib/timezone";
 
 interface BookingData {
   user_name: string;
@@ -86,11 +85,11 @@ export function BookingDialog({ open, onClose, onSubmit, selectedDate, loading =
     if (!validateForm()) return;
 
     try {
-      // Convert local datetime inputs to UTC for storage
+      // Store datetime values exactly as entered
       const bookingData = {
         ...formData,
-        start_time: timezone.fromDateTimeLocal(formData.start_time),
-        end_time: timezone.fromDateTimeLocal(formData.end_time),
+        start_time: formData.start_time.length === 16 ? formData.start_time + ":00" : formData.start_time,
+        end_time: formData.end_time.length === 16 ? formData.end_time + ":00" : formData.end_time,
       };
       
       await onSubmit(bookingData);
