@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { MapComponent } from "@/components/MapComponent";
+import { LocationConfirmationDialog } from "@/components/LocationConfirmationDialog";
 
 interface CarLocation {
   id: string;
@@ -22,6 +23,8 @@ export function CarLocationPage() {
   const [description, setDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingLocation, setPendingLocation] = useState<{latitude: number; longitude: number} | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -67,39 +70,17 @@ export function CarLocationPage() {
     });
   };
 
-  const saveCurrentLocation = async () => {
+  const requestLocationSave = async () => {
     setIsLoadingLocation(true);
     
     try {
       const position = await getCurrentLocation();
       const { latitude, longitude } = position.coords;
-
-      setIsLoading(true);
       
-      const { data, error } = await supabase
-        .from("car_locations")
-        .insert({
-          latitude: latitude,
-          longitude: longitude,
-          description: description.trim() || null,
-          saved_by: 'User'
-        })
-        .select()
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      setLastLocation(data);
-      setDescription("");
-      
-      toast({
-        title: "Location Saved",
-        description: "Car location has been saved successfully!",
-      });
+      setPendingLocation({ latitude, longitude });
+      setShowConfirmDialog(true);
     } catch (error: any) {
-      console.error("Error saving location:", error);
+      console.error("Error getting location:", error);
       
       if (error.code === 1) {
         toast({
@@ -116,14 +97,60 @@ export function CarLocationPage() {
       } else {
         toast({
           title: "Error",
-          description: "Failed to save location. Please try again.",
+          description: "Failed to get location. Please try again.",
           variant: "destructive",
         });
       }
     } finally {
-      setIsLoading(false);
       setIsLoadingLocation(false);
     }
+  };
+
+  const confirmLocationSave = async () => {
+    if (!pendingLocation) return;
+    
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from("car_locations")
+        .insert({
+          latitude: pendingLocation.latitude,
+          longitude: pendingLocation.longitude,
+          description: description.trim() || null,
+          saved_by: 'User'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      setLastLocation(data);
+      setDescription("");
+      setShowConfirmDialog(false);
+      setPendingLocation(null);
+      
+      toast({
+        title: "Location Saved",
+        description: "Car location has been saved successfully!",
+      });
+    } catch (error: any) {
+      console.error("Error saving location:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save location. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setShowConfirmDialog(false);
+    setPendingLocation(null);
   };
 
   const openInMaps = (latitude: number, longitude: number) => {
@@ -173,7 +200,7 @@ export function CarLocationPage() {
             </div>
             
             <Button 
-              onClick={saveCurrentLocation} 
+              onClick={requestLocationSave} 
               disabled={isLoading || isLoadingLocation}
               className="w-full"
               size="lg"
@@ -272,6 +299,14 @@ export function CarLocationPage() {
           </CardContent>
         </Card>
       </div>
+
+      <LocationConfirmationDialog
+        isOpen={showConfirmDialog}
+        onClose={handleDialogClose}
+        onConfirm={confirmLocationSave}
+        locationData={pendingLocation}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

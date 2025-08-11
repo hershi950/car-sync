@@ -4,7 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Car, Edit3, Save, X, Fuel, Hash, Calendar } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Car, Edit3, Save, X, Fuel, Hash, Calendar as CalendarIcon, Wrench } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { appSettingsService } from "@/services/appSettingsService";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,6 +22,7 @@ interface CarDetails {
   year: string;
   fuelType: string;
   color: string;
+  nextServiceDate: Date | null;
 }
 
 export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
@@ -27,6 +32,7 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
     year: "",
     fuelType: "",
     color: "",
+    nextServiceDate: null,
   });
   const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState<CarDetails>(carDetails);
@@ -45,6 +51,7 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
         appSettingsService.get("car_year"),
         appSettingsService.get("car_fuel_type"),
         appSettingsService.get("car_color"),
+        appSettingsService.get("car_next_service_date"),
       ]);
 
       const carData = {
@@ -53,6 +60,7 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
         year: details[2] || "2022",
         fuelType: details[3] || "Petrol",
         color: details[4] || "Silver",
+        nextServiceDate: details[5] ? new Date(details[5]) : null,
       };
 
       setCarDetails(carData);
@@ -76,6 +84,7 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
         appSettingsService.set("car_year", editValues.year),
         appSettingsService.set("car_fuel_type", editValues.fuelType),
         appSettingsService.set("car_color", editValues.color),
+        appSettingsService.set("car_next_service_date", editValues.nextServiceDate ? editValues.nextServiceDate.toISOString() : ""),
       ]);
 
       setCarDetails(editValues);
@@ -106,7 +115,7 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
     setIsEditing(true);
   };
 
-  const updateEditValue = (field: keyof CarDetails, value: string) => {
+  const updateEditValue = (field: keyof CarDetails, value: string | Date | null) => {
     setEditValues(prev => ({ ...prev, [field]: value }));
   };
 
@@ -173,7 +182,7 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
             {/* Year */}
             <div className="space-y-2">
               <Label htmlFor="year" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
+                <CalendarIcon className="h-4 w-4" />
                 Year
               </Label>
               {isEditing ? (
@@ -232,6 +241,59 @@ export function CarDetailsPage({ accessLevel }: CarDetailsPageProps) {
               ) : (
                 <div className="p-3 bg-muted/50 rounded-lg">
                   {carDetails.color}
+                </div>
+              )}
+            </div>
+
+            {/* Next Service Date */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Wrench className="h-4 w-4" />
+                Next Required Service Date
+              </Label>
+              {isEditing ? (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !editValues.nextServiceDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {editValues.nextServiceDate ? (
+                        format(editValues.nextServiceDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={editValues.nextServiceDate}
+                      onSelect={(date) => updateEditValue('nextServiceDate', date || null)}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                      className="p-3 pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              ) : (
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  {carDetails.nextServiceDate ? (
+                    <div className="flex items-center gap-2">
+                      <span>{format(carDetails.nextServiceDate, "PPP")}</span>
+                      {carDetails.nextServiceDate <= new Date() && (
+                        <span className="text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-1 rounded">
+                          Due Now
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">No service date set</span>
+                  )}
                 </div>
               )}
             </div>
