@@ -7,118 +7,14 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
-      app_settings: {
-        Row: {
-          created_at: string
-          id: string
-          key: string
-          updated_at: string
-          value: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          key: string
-          updated_at?: string
-          value: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          key?: string
-          updated_at?: string
-          value?: string
-        }
-        Relationships: []
-      }
-      car_locations: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: string
-          latitude: number
-          longitude: number
-          saved_by: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          latitude: number
-          longitude: number
-          saved_by: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: string
-          latitude?: number
-          longitude?: number
-          saved_by?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      car_schedules: {
-        Row: {
-          created_at: string
-          end_time: string
-          id: string
-          notes: string | null
-          purpose: string
-          start_time: string
-          updated_at: string
-          user_name: string
-        }
-        Insert: {
-          created_at?: string
-          end_time: string
-          id?: string
-          notes?: string | null
-          purpose: string
-          start_time: string
-          updated_at?: string
-          user_name: string
-        }
-        Update: {
-          created_at?: string
-          end_time?: string
-          id?: string
-          notes?: string | null
-          purpose?: string
-          start_time?: string
-          updated_at?: string
-          user_name?: string
-        }
-        Relationships: []
-      }
-      team_members: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
